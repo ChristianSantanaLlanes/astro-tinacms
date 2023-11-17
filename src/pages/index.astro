@@ -1,12 +1,17 @@
 ---
-import { client } from '../../.tina/__generated__/client'
-import { MyComponent } from '../components/react'
-const response = await client.queries.post({relativePath: "hello-world.md"})
+import { client } from "../../.tina/__generated__/client";
+import { MyComponent } from "../components/react";
+const global = await client.queries.global({ relativePath: "global.yaml" });
+const response = await client.queries.home({ relativePath: "home.mdx" });
 ---
 
 <main>
-	<!-- No way for visual editing to work with .astro components -->
-  <!-- <pre  style={{margin: '100px auto', width: '1000px'}}>{JSON.stringify(response.data.post.body, null, 2)}</pre> -->
-	<!-- Uncomment React version to see Tina working -->
-	<MyComponent client:tina {...response} />
+<!--
+  client:load will hydrate before client:idle
+  So the component with the global data colleciton will hydrate first.
+  This causes the global data collection to populate the editor
+  in visual editing even when the home page collection is clicked.
+-->
+  <MyComponent client:idle {...response} />
+  <MyComponent client:load {...global} />
 </main>
